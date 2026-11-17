@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -556,12 +555,12 @@ const W={
  Rainy:{top:0x4b5560,bot:0x8a929a,fog:0x7d858d,fd:.00055,sun:.5,sunc:0xb5c3d1,hemi:1.2,g:'wet',tint:0xffffff,rough:.2,exp:.9,tree:0x48723e,sd:[.25,.9,.25]},
  Snowing:{top:0x9eaebd,bot:0xdde6ee,fog:0xd3dce5,fd:.0005,sun:1.2,sunc:0xcfe1ff,hemi:1.4,g:'snow',tint:0xffffff,rough:.8,exp:1.05,tree:0xa9b8ad,sd:[.4,.8,.4]}};
 let sunDir=new V3(200,300,120),wx='Sunny';scene.fog=new THREE.FogExp2(0xffffff,.0003);
-const rain=new THREE.LineSegments(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:0xb8c6d6,transparent:true,opacity:.45})),NR=7000,rp=new Float32Array(NR*6);
-for(let i=0;i<NR;i++){const x=(Math.random()-.5)*400,y=Math.random()*250,z=(Math.random()-.5)*400;rp.set([x,y,z,x,y,z],i*6)}
+const rain=new THREE.LineSegments(new THREE.BufferGeometry(),new THREE.LineBasicMaterial({color:0xb8c6d6,transparent:true,opacity:.5})),RA=2600,RH=620,NR=34000,rp=new Float32Array(NR*6); // weather volume: RA × RA m around the walker, RH m tall
+for(let i=0;i<NR;i++){const x=(Math.random()-.5)*RA,y=Math.random()*RH,z=(Math.random()-.5)*RA;rp.set([x,y,z,x,y-6,z],i*6)}
 rain.geometry.setAttribute('position',new THREE.BufferAttribute(rp,3));rain.frustumCulled=false;scene.add(rain);
-const NS=6000,sp=new Float32Array(NS*3);for(let i=0;i<NS;i++)sp.set([(Math.random()-.5)*400,Math.random()*250,(Math.random()-.5)*400],i*3);
+const NS=26000,sp=new Float32Array(NS*3);for(let i=0;i<NS;i++)sp.set([(Math.random()-.5)*RA,Math.random()*RH,(Math.random()-.5)*RA],i*3);
 const flake=cvT(32,(x)=>{const g=x.createRadialGradient(16,16,0,16,16,16);g.addColorStop(0,'#fff');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,32,32)});
-const snow=new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial({size:1.6,map:flake,transparent:true,depthWrite:false,opacity:.9}));snow.geometry.setAttribute('position',new THREE.BufferAttribute(sp,3));snow.frustumCulled=false;scene.add(snow);
+const snow=new THREE.Points(new THREE.BufferGeometry(),new THREE.PointsMaterial({size:2.6,map:flake,transparent:true,depthWrite:false,opacity:.9}));snow.geometry.setAttribute('position',new THREE.BufferAttribute(sp,3));snow.frustumCulled=false;scene.add(snow);
 function setWeather(n){wx=n;const w=W[n];sky.material.uniforms.t.value.setHex(w.top);sky.material.uniforms.b.value.setHex(w.bot);scene.fog.color.setHex(w.fog);scene.fog.density=w.fd;
  sun.intensity=w.sun;sun.color.setHex(w.sunc);hemi.intensity=w.hemi;hemi.color.setHex(w.bot);sunDir.set(...w.sd).multiplyScalar(450);sun.shadow.radius=n==='Cloudy'?6:n==='Sunny'?1.5:4;
  gmat.map=GTX[w.g];pkm.map=n==='Snowing'?TX.snow:TX.grass;pkm.color.setHex(n==='Cloudy'?0xc9d0c4:0xffffff);pkm.needsUpdate=true;gmat.color.setHex(w.tint);gmat.roughness=w.rough;gmat.roughnessMap=n==='Rainy'?puddle:null;gmat.metalness=n==='Rainy'?.15:0;gmat.needsUpdate=true;
@@ -570,9 +569,9 @@ function setWeather(n){wx=n;const w=W[n];sky.material.uniforms.t.value.setHex(w.
  const old=scene.environment;scene.environment=pm.fromScene(es,.02).texture;old&&old.dispose();
  mat.envMapIntensity=(U.uPaint.value?.45:.7)*(n==='Rainy'?1.4:1);bm.envMapIntensity=n==='Rainy'?1.8:1.2;setT($('sw'),n)}
 function weatherTick(dt,t){const c=controls.target,wind=n=>Math.sin(t*.3)*n;
- if(rain.visible){for(let i=0;i<NR;i++){const o=i*6;rp[o+1]-=dt*95;rp[o+4]=rp[o+1]-3.5;rp[o]+=dt*wind(6)+dt*6;rp[o+3]=rp[o]+.6;if(rp[o+1]<0){rp[o+1]=250;rp[o]=(Math.random()-.5)*400;rp[o+2]=rp[o+5]=(Math.random()-.5)*400;rp[o+3]=rp[o]+.6;rp[o+4]=rp[o+1]-3.5}}
-  rain.geometry.attributes.position.needsUpdate=true;rain.position.set(Math.round(c.x/400)*400,0,Math.round(c.z/400)*400);rain.position.x=c.x;rain.position.z=c.z}
- if(snow.visible){for(let i=0;i<NS;i++){const o=i*3;sp[o+1]-=dt*(6+(i%5));sp[o]+=Math.sin(t*.7+i)*dt*3+dt*3;sp[o+2]+=Math.cos(t*.5+i*.3)*dt*2;if(sp[o+1]<0)sp[o+1]=250}snow.geometry.attributes.position.needsUpdate=true;snow.position.set(c.x,0,c.z)}}
+ if(rain.visible){const wx_=dt*wind(6)+dt*6;for(let i=0;i<NR;i++){const o=i*6;rp[o+1]-=dt*110;rp[o+4]=rp[o+1]-6;rp[o]+=wx_;rp[o+3]=rp[o]+.9;if(rp[o+1]<0){rp[o+1]=RH;rp[o]=(Math.random()-.5)*RA;rp[o+2]=rp[o+5]=(Math.random()-.5)*RA;rp[o+3]=rp[o]+.9;rp[o+4]=rp[o+1]-6}}
+  rain.geometry.attributes.position.needsUpdate=true;rain.position.set(st.px,0,st.pz)}
+ if(snow.visible){for(let i=0;i<NS;i++){const o=i*3;sp[o+1]-=dt*(6+(i%5));sp[o]+=Math.sin(t*.7+i)*dt*3+dt*3;sp[o+2]+=Math.cos(t*.5+i*.3)*dt*2;if(sp[o+1]<0)sp[o+1]=RH;if(sp[o]>RA/2)sp[o]-=RA}snow.geometry.attributes.position.needsUpdate=true;snow.position.set(st.px,0,st.pz)}}
 /* ===== CameraController ===== */
 const controls=new THREE.OrbitControls(cam,cv);controls.enableDamping=true;controls.dampingFactor=.08;controls.maxPolarAngle=Math.PI*.495;controls.maxDistance=6000;controls.minDistance=4;controls.screenSpacePanning=true;
 const lp=(m)=>new V3((m[0]-CX)*S,m[2]*S,-(m[1]-CY)*S); // model -> city-local
@@ -632,6 +631,3 @@ setTimeout(()=>{ldn.style.opacity=0;setTimeout(()=>ldn.remove(),700)},300);
 }catch(e){console.error(e);lt.textContent='Error: '+e.message;lt.style.color='#f66'}
 })();
 </script></body></html>
-=======
-
->>>>>>> b69b290be4ca64c98390697144223e29768165a3
